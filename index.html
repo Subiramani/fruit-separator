@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Image Ripped Detection</title>
+    <!-- Include Tailwind CSS CDN -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.15/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <script src="//unpkg.com/brain.js"></script>
+  </head>
+  <body class="bg-gray-100">
+    <div class="container mx-auto p-6">
+      <!-- Title -->
+      <div class="mt-4">
+        <input type="file" id="jsonInput" accept=".json" multiple class="hidden" />
+        <label for="jsonInput" class="cursor-pointer px-4 py-2 bg-blue-500 text-white rounded-md">
+          Upload JSON Files For Training
+        </label>
+      </div>
+      <button id="train-me" class="mt-4 px-4 py-2 bg-green-500 text-white rounded-md">
+        Train me
+      </button>
+      <div id="loading" class="hidden">Loading...</div>
+
+      <!-- File Input -->
+      <div class="mt-4">
+        <input type="file" id="imageInput" accept="image/*" class="hidden" />
+        <label for="imageInput" class="cursor-pointer px-4 py-2 bg-blue-500 text-white rounded-md">
+          Upload Image
+        </label>
+      </div>
+
+      <!-- Display Uploaded Image -->
+      <div id="imageDisplay" class="mt-4"></div>
+
+      <!-- Rip Status Display -->
+      <div class="mt-4 flex items-center">
+        <p id="ripStatus" class="text-lg font-semibold mr-4"></p>
+        <button id="rippedButton" class="px-4 py-2 bg-green-500 text-white rounded-md">
+          It's Ripped
+        </button>
+        <button id="notRippedButton" class="px-4 py-2 bg-red-500 text-white rounded-md">
+          Not Ripped
+        </button>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>

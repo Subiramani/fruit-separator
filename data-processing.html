@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Image Upload and Display</title>
+    <!-- Include Tailwind CSS CDN -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.15/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="bg-gray-100">
+    <div class="container mx-auto p-6">
+      <!-- Title -->
+      <h1 class="text-2xl font-semibold text-gray-800">Generate data for your Prdictor Robot</h1>
+
+      <!-- File Input -->
+      <div class="mt-4">
+        <label for="imageInput" class="cursor-pointer px-4 py-2 bg-blue-500 text-white rounded-md">
+          Upload Training Images
+        </label>
+        <input
+          type="file"
+          id="imageInput"
+          accept="image/*"
+          multiple
+          class="hidden"
+          onchange="loadImage()"
+        />
+      </div>
+
+      <!-- Process Button (Moved Below File Input) -->
+      <button onclick="processImages()" class="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md">
+        Process
+      </button>
+
+      <!-- Display area for the uploaded image -->
+      <div id="imageDisplay" class="mt-4"></div>
+
+      <script>
+        function loadImage() {
+          const imageInput = document.getElementById("imageInput");
+          if (imageInput.files && imageInput.files.length > 0) {
+            const imageDisplay = document.getElementById("imageDisplay");
+            imageDisplay.innerHTML = ""; // Clear previous images
+
+            for (const file of imageInput.files) {
+              const reader = new FileReader();
+
+              reader.onload = function (e) {
+                const img = document.createElement("img");
+                img.src = e.target.result;
+                img.style.maxWidth = "100%"; // Adjust the image size if needed
+                img.style.height = "auto";
+
+                // Append the image to the display area
+                imageDisplay.appendChild(img);
+              };
+            }
+          }
+        }
+        function processImages() {
+          // Get the input element for uploading images
+          const imageInput = document.getElementById("imageInput");
+          const ripeState = 0; /** @update @catuion */
+
+          // Check if files have been selected
+          if (imageInput.files && imageInput.files.length > 0) {
+            const imageDisplay = document.getElementById("imageDisplay");
+            imageDisplay.innerHTML = ""; // Clear previous images
+
+            for (const file of imageInput.files) {
+              const reader = new FileReader();
+
+              reader.onload = function (e) {
+                // Create an image element for each uploaded image
+                const img = document.createElement("img");
+                img.src = e.target.result;
+                img.style.maxWidth = "100%"; // Adjust the image size if needed
+                img.style.height = "auto";
+
+                // Append the image to the display area
+                imageDisplay.appendChild(img);
+
+                // Extract the filename from the input
+                const filename = file.name;
+                const filenameWithoutExtension = filename.split(".")[0];
+
+                // Create a canvas to extract pixel data
+                const canvas = document.createElement("canvas");
+                const ctx = canvas.getContext("2d");
+                img.onload = function () {
+                  canvas.width = img.width;
+                  canvas.height = img.height;
+                  ctx.drawImage(img, 0, 0, img.width, img.height);
+
+                  // Extract pixel data
+                  const imageData = ctx.getImageData(0, 0, img.width, img.height).data;
+
+                  // Create an array to store pixel data as objects
+                  const pixelDataArray = [];
+
+                  for (let i = 0; i < imageData.length; i += 4) {
+                    const r = imageData[i];
+                    const g = imageData[i + 1];
+                    const b = imageData[i + 2];
+
+                    // Create an object for the pixel data and push it to the array
+                    const pixelData = { r, g, b };
+                    pixelDataArray.push(pixelData);
+                  }
+
+                  // Convert the array to JSON and Set the data type.
+                  const jsonData = JSON.stringify({
+                    input: pixelDataArray,
+                    output: [ripeState],
+                  });
+
+                  // Create a Blob containing the JSON data
+                  const blob = new Blob([jsonData], { type: "application/json" });
+
+                  // Create a download link for the JSON file
+                  const link = document.createElement("a");
+                  link.href = URL.createObjectURL(blob);
+                  link.download = `${filenameWithoutExtension}_ripestate_${ripeState}.json`;
+
+                  // Trigger a click event on the link to initiate the download
+                  link.click();
+                };
+              };
+
+              // Read the selected file as a data URL
+              reader.readAsDataURL(file);
+            }
+          }
+        }
+      </script>
+    </div>
+  </body>
+</html>
